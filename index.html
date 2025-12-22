@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Chess | SNOWMAN YT</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #050505;
+            color: #00d4ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        /* Neon Board Container */
+        #board { 
+            width: 450px; 
+            margin: 20px auto; 
+            border: 4px solid #00d4ff;
+            box-shadow: 0 0 15px #00d4ff, inset 0 0 10px #00d4ff;
+            border-radius: 8px;
+            background-color: #000;
+        }
+
+        /* Styling Coordinates A-H, 1-8 */
+        .notation-322f9 {
+            color: #00d4ff !important;
+            font-weight: bold;
+            text-shadow: 0 0 5px #00d4ff;
+        }
+
+        /* Buttons with Neon Glow */
+        .controls { margin-bottom: 20px; }
+        button {
+            padding: 12px 24px;
+            cursor: pointer;
+            background: transparent;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-weight: bold;
+            font-family: inherit;
+            border-radius: 0;
+            margin: 5px;
+            transition: 0.3s all;
+            box-shadow: 0 0 5px #00d4ff;
+        }
+
+        button:hover { 
+            background: #00d4ff; 
+            color: #000;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+
+        /* Glowing Footer */
+        .footer { 
+            margin-top: 40px; 
+            font-size: 1.5rem; 
+            color: #00d4ff;
+            text-shadow: 0 0 8px #00d4ff;
+            animation: flicker 2s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.4; }
+        }
+
+        .status { 
+            margin: 10px; 
+            font-size: 1rem; 
+            color: #00d4ff;
+            letter-spacing: 2px;
+        }
+
+        /* Darken the white squares slightly for a better neon contrast */
+        .white-1e1d7 { background-color: #0a2029 !important; }
+        .black-3c85d { background-color: #040b0e !important; }
+    </style>
+</head>
+<body>
+
+    <h2>NEON CHESS</h2>
+    
+    <div class="controls">
+        <button onclick="setMode('pvp')">PVP MODE</button>
+        <button onclick="setMode('pva')">VS AI</button>
+        <button onclick="resetGame()">SYSTEM REBOOT</button>
+    </div>
+
+    <div class="status" id="status">INITIALIZING SYSTEM...</div>
+    
+    <div id="board"></div>
+
+    <div class="footer">
+        GAME DEVELOPED BY: <strong> @ SNOWMAN YT</strong>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
+    <script>
+        var board = null;
+        var game = new Chess();
+        var $status = $('#status');
+        var mode = 'pva';
+
+        function onDragStart (source, piece, position, orientation) {
+            if (game.game_over()) return false;
+            if ((mode === 'pva' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false;
+            }
+        }
+
+        function makeRandomMove () {
+            var possibleMoves = game.moves();
+            if (possibleMoves.length === 0) return;
+            var randomIdx = Math.floor(Math.random() * possibleMoves.length);
+            game.move(possibleMoves[randomIdx]);
+            board.position(game.fen());
+            updateStatus();
+        }
+
+        function onDrop (source, target) {
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' 
+            });
+
+            if (move === null) return 'snapback';
+
+            updateStatus();
+
+            if (mode === 'pva' && !game.game_over()) {
+                window.setTimeout(makeRandomMove, 600);
+            }
+        }
+
+        function onSnapEnd () {
+            board.position(game.fen());
+        }
+
+        function updateStatus () {
+            var status = '';
+            var moveColor = (game.turn() === 'b') ? 'BLACK' : 'WHITE';
+
+            if (game.in_checkmate()) {
+                status = 'TERMINATED: ' + moveColor + ' CHECKMATED';
+            } else if (game.in_draw()) {
+                status = 'SYSTEM HALT: DRAW';
+            } else {
+                status = moveColor + ' ACTIVE';
+                if (game.in_check()) { status += ' [DANGER: CHECK]'; }
+            }
+
+            $status.html("<strong>STATUS:</strong> " + status);
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            resetGame();
+        }
+
+        function resetGame() {
+            game.reset();
+            board.start();
+            updateStatus();
+        }
+
+        var config = {
+            draggable: true,
+            position: 'start',
+            showNotation: true, 
+            onDragStart: onDragStart,
+            onDrop: onDrop,
+            onSnapEnd: onSnapEnd
+        };
+        
+        board = Chessboard('board', config);
+        updateStatus();
+    </script>
+</body>
+</html>
