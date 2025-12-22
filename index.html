@@ -2,108 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Chess | Premium Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Chess | Snow Check Edition</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
+        :root {
+            --neon-blue: #00d4ff;
+            --pure-white: #ffffff;
+            --neon-green: #39ff14;
+            --neon-red: #ff3131;
+            --bg-dark: #020202;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0a0a0a;
-            color: #00d4ff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--neon-blue);
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            margin: 0;
+            min-height: 100vh;
+            overflow: hidden; /* Prevents bounce on mobile */
         }
 
         h2 {
-            font-size: 2.5rem;
-            letter-spacing: 8px;
-            text-shadow: 0 0 15px #00d4ff;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px var(--neon-blue);
+            margin: 10px 0;
             text-transform: uppercase;
         }
 
-        /* Essential for visibility: High-contrast piece styling */
-        .piece-417db {
-            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) brightness(1.1);
-            transition: transform 0.2s ease;
-            cursor: grab;
+        /* Profiles */
+        .player-profile {
+            width: 95vw;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid var(--neon-blue);
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 8px;
+            box-sizing: border-box;
         }
 
-        .piece-417db:active { cursor: grabbing; }
-
-        /* Board Styling */
-        #board { 
-            width: 480px; 
-            border: 5px solid #00d4ff;
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.4);
-            border-radius: 4px;
-        }
-
-        /* Custom Square Colors for clarity */
-        .white-1e1d7 { background-color: #1a2a33 !important; } /* Dark Blue-Grey */
-        .black-3c85d { background-color: #050505 !important; } /* Deep Black */
-
-        /* Coordinate labels */
-        .notation-322f9 {
-            color: #00d4ff !important;
+        .timer {
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
             font-weight: bold;
+            color: #fff;
+            background: #000;
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--neon-blue);
+            transition: all 0.3s ease;
         }
 
-        /* Controls & Status */
-        .controls { margin: 20px 0; }
+        .active-timer {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 15px var(--neon-green);
+            color: var(--neon-green);
+            transform: scale(1.05);
+        }
+
+        /* THE BOARD - Smooth Animations */
+        .board-wrapper { width: 95vw; max-width: 500px; }
+        #board {
+            width: 100%;
+            border: 5px solid var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Piece Movement Smoothing */
+        .piece-417db { 
+            will-change: transform; /* Hardware acceleration */
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.7));
+            transition: opacity 0.2s ease;
+        }
+
+        /* Square Colors */
+        .white-1e1d7 { background-color: var(--pure-white) !important; }
+        .black-3c85d { background-color: var(--neon-blue) !important; }
+
+        /* Projection Highlights */
+        .highlight-move { box-shadow: inset 0 0 15px 6px var(--neon-green) !important; border-radius: 50%; }
+        .highlight-capture { box-shadow: inset 0 0 15px 6px var(--neon-red) !important; }
+
+        .controls { display: flex; gap: 10px; margin: 15px 0; }
         button {
             padding: 10px 20px;
             background: transparent;
-            border: 2px solid #00d4ff;
-            color: #00d4ff;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
             font-weight: bold;
-            text-transform: uppercase;
             cursor: pointer;
-            margin: 0 5px;
             transition: 0.3s;
         }
-
-        button:hover {
-            background: #00d4ff;
-            color: #000;
-            box-shadow: 0 0 15px #00d4ff;
-        }
-
-        .status-box {
-            background: rgba(0, 212, 255, 0.1);
-            padding: 10px 30px;
-            border-radius: 20px;
-            border: 1px solid #00d4ff;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
+        button:hover { background: var(--neon-blue); color: #000; }
     </style>
 </head>
 <body>
 
-    <h2>NEON CHESS</h2>
-    
-    <div class="status-box" id="status">SYSTEM READY</div>
+    <h2>Neon Chess Pro</h2>
 
-    <div class="controls">
-        <button onclick="setMode('pvp')">Player vs Player</button>
-        <button onclick="setMode('pva')">vs Computer (AI)</button>
-        <button onclick="resetGame()">Reset Board</button>
+    <div class="player-profile">
+        <div class="player-info"><strong>BLACK AI</strong></div>
+        <div class="timer" id="black-timer">05:00</div>
     </div>
 
-    <div id="board"></div>
+    <div class="board-wrapper">
+        <div id="board"></div>
+    </div>
 
-    <div class="footer">
-        GAME DEVELOPED BY @SNOWMAN YT
+    <div class="player-profile">
+        <div class="player-info"><strong>WHITE PLAYER</strong></div>
+        <div class="timer" id="white-timer">05:00</div>
+    </div>
+
+    <div class="controls">
+        <button onclick="setMode('pvp')">PVP</button>
+        <button onclick="setMode('pva')">VS AI</button>
+        <button onclick="resetGame()">RESET</button>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -113,86 +135,103 @@
     <script>
         var board = null;
         var game = new Chess();
-        var $status = $('#status');
         var mode = 'pva';
+        var whiteTime = 300, blackTime = 300;
+        var timerInterval = null;
 
-        function onDragStart (source, piece, position, orientation) {
-            if (game.game_over()) return false;
-            // Prevent playing as the wrong color
-            if ((mode === 'pva' && piece.search(/^b/) !== -1) ||
-                (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
+        function formatTime(s) {
+            let m = Math.floor(s / 60);
+            let sec = s % 60;
+            return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
         }
 
-        function makeRandomMove () {
-            var possibleMoves = game.moves();
-            if (possibleMoves.length === 0) return;
-            var randomIdx = Math.floor(Math.random() * possibleMoves.length);
-            game.move(possibleMoves[randomIdx]);
-            board.position(game.fen());
-            updateStatus();
+        function updateTimerDisplay() {
+            $('#white-timer').text(formatTime(whiteTime));
+            $('#black-timer').text(formatTime(blackTime));
+            $('.timer').removeClass('active-timer');
+            if (game.turn() === 'w') $('#white-timer').addClass('active-timer');
+            else $('#black-timer').addClass('active-timer');
         }
 
-        function onDrop (source, target) {
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' 
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (game.game_over()) return;
+                if (game.turn() === 'w') whiteTime--;
+                else blackTime--;
+                if (whiteTime <= 0 || blackTime <= 0) {
+                    alert("Time Expired!");
+                    clearInterval(timerInterval);
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function removeHighlights() { $('#board .square-55d63').removeClass('highlight-move highlight-capture'); }
+
+        function showProjections(square) {
+            var moves = game.moves({ square: square, verbose: true });
+            moves.forEach(m => {
+                let type = (m.flags.includes('c') || m.flags.includes('e')) ? 'capture' : 'move';
+                $('#board .square-' + m.to).addClass('highlight-' + type);
             });
+        }
 
+        function onDragStart(source, piece) {
+            if (game.game_over()) return false;
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) return false;
+            showProjections(source);
+        }
+
+        function onDrop(source, target) {
+            removeHighlights();
+            var move = game.move({ from: source, to: target, promotion: 'q' });
             if (move === null) return 'snapback';
 
-            updateStatus();
+            if (!timerInterval) startTimer();
+            updateTimerDisplay();
 
             if (mode === 'pva' && !game.game_over()) {
-                window.setTimeout(makeRandomMove, 600);
+                window.setTimeout(makeRandomMove, 400); // Wait for smooth transition
             }
         }
 
-        function onSnapEnd () {
-            board.position(game.fen());
-        }
-
-        function updateStatus () {
-            var status = '';
-            var moveColor = (game.turn() === 'b') ? 'Black' : 'White';
-
-            if (game.in_checkmate()) {
-                status = 'GAME OVER: ' + moveColor + ' is in Checkmate.';
-            } else if (game.in_draw()) {
-                status = 'GAME OVER: Draw';
-            } else {
-                status = moveColor + "'s Turn";
-                if (game.in_check()) { status += ' (CHECK!)'; }
-            }
-            $status.text(status);
-        }
-
-        function setMode(newMode) {
-            mode = newMode;
-            resetGame();
-            $status.text(mode === 'pva' ? "VS AI ENABLED" : "PVP ENABLED");
+        function makeRandomMove() {
+            var moves = game.moves();
+            if (moves.length === 0) return;
+            game.move(moves[Math.floor(Math.random() * moves.length)]);
+            board.position(game.fen()); // This uses the smooth moveSpeed below
+            updateTimerDisplay();
         }
 
         function resetGame() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            whiteTime = 300; blackTime = 300;
             game.reset();
             board.start();
-            updateStatus();
+            updateTimerDisplay();
         }
 
         var config = {
             draggable: true,
             position: 'start',
+            // --- SMOOTHNESS SETTINGS ---
+            moveSpeed: 400,      // Slows down the slide for elegance
+            snapbackSpeed: 500,  // Smooth return if invalid move
+            snapSpeed: 150,      // Quick but not instant snap
+            // ---------------------------
             onDragStart: onDragStart,
             onDrop: onDrop,
-            onSnapEnd: onSnapEnd,
+            onSnapEnd: () => board.position(game.fen()),
             pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
         };
-        
+
         board = Chessboard('board', config);
-        updateStatus();
+        $(window).resize(board.resize);
+        updateTimerDisplay();
+        function setMode(m) { mode = m; resetGame(); }
     </script>
 </body>
 </html>
