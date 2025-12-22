@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Chess Pro | Enhanced Notation Edition</title>
+    <title>Neon Snowcheck | @SNOWMAN YT</title>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
         :root {
@@ -25,98 +25,84 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- Notation Enhancement --- */
-        .notation-322f9 {
-            font-weight: 900 !important;
-            font-size: 14px !important;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-            user-select: none;
+        /* --- Brand Text Styles --- */
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
+            margin: 15px 0 5px 0;
+            text-transform: uppercase;
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        /* Black squares notation (White text) */
-        .black-3c85d .notation-322f9 {
-            color: var(--pure-white) !important;
-            text-shadow: 0 0 8px #000;
+        .developer-footer {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            color: var(--neon-blue);
+            margin: 20px 0;
+            text-transform: uppercase;
+            opacity: 0.8;
+            border-top: 1px solid var(--border-blue);
+            padding-top: 10px;
+            width: 80%;
+            text-align: center;
         }
 
-        /* White squares notation (Deep Blue text) */
-        .white-1e1d7 .notation-322f9 {
-            color: #004a6e !important;
-            text-shadow: 0 0 2px rgba(255,255,255,0.5);
-        }
-
+        /* --- Check Alert --- */
         #check-alert {
             position: fixed;
-            top: 20px;
-            background: rgba(255, 49, 49, 0.9);
+            top: 80px;
+            background: rgba(255, 49, 49, 0.95);
             color: white;
             padding: 8px 25px;
             font-weight: bold;
             border-radius: 50px;
             text-transform: uppercase;
-            box-shadow: 0 0 20px var(--neon-red);
+            box-shadow: 0 0 25px var(--neon-red);
             display: none;
             z-index: 1000;
-            animation: pulse 1s infinite;
+            animation: pulse 0.8s infinite;
         }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 
+        /* --- Notation Enhancement --- */
+        .notation-322f9 { font-weight: 900 !important; font-size: 14px !important; }
+        .black-3c85d .notation-322f9 { color: var(--pure-white) !important; text-shadow: 0 0 8px #000; }
+        .white-1e1d7 .notation-322f9 { color: #004a6e !important; text-shadow: 0 0 2px rgba(255,255,255,0.5); }
+
+        /* Profiles & Board */
         .player-profile {
-            width: 95vw;
-            max-width: 500px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin: 5px 0;
+            width: 95vw; max-width: 500px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; margin: 5px 0;
             border: 2px solid var(--neon-blue);
             background: rgba(0, 212, 255, 0.05);
             border-radius: 8px;
         }
 
         .timer {
-            font-family: 'Courier New', monospace;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #fff;
-            background: #000;
-            padding: 4px 12px;
-            border-radius: 4px;
-            border: 1px solid var(--neon-blue);
+            font-family: 'Courier New', monospace; font-size: 1.4rem; font-weight: bold;
+            color: #fff; background: #000; padding: 4px 12px;
+            border-radius: 4px; border: 1px solid var(--neon-blue);
         }
 
-        .active-timer {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-green);
-            color: var(--neon-green);
-        }
+        .active-timer { border-color: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); color: var(--neon-green); }
 
         .board-wrapper { width: 95vw; max-width: 500px; position: relative; }
-        #board {
-            width: 100%;
-            border: 6px solid var(--neon-blue);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-        }
+        #board { width: 100%; border: 6px solid var(--neon-blue); box-shadow: 0 0 35px rgba(0, 212, 255, 0.5); }
 
-        .square-55d63 {
-            box-sizing: border-box !important;
-            border: 0.5px solid var(--border-blue) !important;
-        }
+        .square-55d63 { box-sizing: border-box !important; border: 0.5px solid var(--border-blue) !important; }
+        .white-1e1d7 { background-color: var(--pure-white) !important; box-shadow: inset 0 0 10px rgba(0, 150, 255, 0.2) !important; }
+        .black-3c85d { background-color: var(--neon-blue) !important; box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.4) !important; }
 
-        .white-1e1d7 { 
-            background-color: var(--pure-white) !important;
-            box-shadow: inset 0 0 10px rgba(0, 150, 255, 0.2) !important;
-        }
-        .black-3c85d { 
-            background-color: var(--neon-blue) !important;
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.4) !important;
-        }
-
+        /* Interaction Highlights */
         .highlight-selected { box-shadow: inset 0 0 0 5px yellow !important; }
         .highlight-move { box-shadow: inset 0 0 15px 5px var(--neon-green) !important; background: rgba(57, 255, 20, 0.2) !important; }
         .highlight-capture { box-shadow: inset 0 0 15px 5px var(--neon-red) !important; background: rgba(255, 49, 49, 0.3) !important; }
@@ -124,23 +110,19 @@
 
         .controls { display: flex; gap: 10px; margin: 15px 0; }
         button {
-            padding: 10px 18px;
-            background: transparent;
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
+            padding: 10px 18px; background: transparent; border: 2px solid var(--neon-blue);
+            color: var(--neon-blue); font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s;
         }
-        button:hover { background: var(--neon-blue); color: #000; }
+        button:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
     </style>
 </head>
 <body>
 
+    <div class="main-title">NEON SNOWCHECK</div>
     <div id="check-alert">⚠️ KING IN DANGER ⚠️</div>
 
     <div class="player-profile">
-        <div><strong>BLACK AI</strong></div>
+        <div><strong>SYSTEM AI</strong></div>
         <div class="timer" id="black-timer">05:00</div>
     </div>
 
@@ -149,7 +131,7 @@
     </div>
 
     <div class="player-profile">
-        <div><strong>WHITE PLAYER</strong></div>
+        <div><strong>PLAYER WHITE</strong></div>
         <div class="timer" id="white-timer">05:00</div>
     </div>
 
@@ -158,6 +140,8 @@
         <button onclick="setMode('pva')">VS AI</button>
         <button onclick="resetGame()">REBOOT</button>
     </div>
+
+    <div class="developer-footer">Game developed by @ SNOWMAN YT</div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
@@ -189,11 +173,10 @@
             $('.square-55d63').removeClass('highlight-check');
             if (game.in_check()) {
                 $('#check-alert').fadeIn();
-                let color = game.turn();
                 let kingPos = "";
                 game.board().forEach((row, r) => {
                     row.forEach((p, c) => {
-                        if (p && p.type === 'k' && p.color === color) 
+                        if (p && p.type === 'k' && p.color === game.turn()) 
                             kingPos = String.fromCharCode(97+c) + (8-r);
                     });
                 });
@@ -267,10 +250,7 @@
         }
 
         board = Chessboard('board', {
-            position: 'start', 
-            draggable: false, 
-            moveSpeed: 450,
-            showNotation: true, // Ensured notation is enabled
+            position: 'start', draggable: false, moveSpeed: 450, showNotation: true,
             pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
         });
 
