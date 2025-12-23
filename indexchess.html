@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Snowcheck | @SNOWMAN YT</title>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <style>
+        :root {
+            --neon-blue: #00d4ff;
+            --pure-white: #ffffff;
+            --neon-green: #39ff14;
+            --neon-red: #ff3131;
+            --bg-dark: #020202;
+            --border-blue: rgba(0, 212, 255, 0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--neon-blue);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .main-title {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* Chessboard Styling */
+        #board {
+            width: 350px;
+            border: 4px solid var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            background: #000;
+        }
+
+        .controls {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 12px 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .btn-quit {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+        }
+
+        .btn-quit:hover {
+            background: var(--neon-red);
+            color: white;
+            box-shadow: 0 0 20px var(--neon-red);
+        }
+
+        .timer-box {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            font-weight: bold;
+            display: flex;
+            gap: 20px;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        /* Square Highlights */
+        .highlight-selected { box-shadow: inset 0 0 10px 5px var(--neon-blue) !important; }
+        .highlight-move { box-shadow: inset 0 0 10px 5px var(--neon-green) !important; }
+        .highlight-capture { box-shadow: inset 0 0 10px 5px var(--neon-red) !important; }
+    </style>
+</head>
+<body>
+
+    <h1 class="main-title">NEON SNOWCHECK</h1>
+
+    <div class="timer-box">
+        <div id="white-timer">WHITE: 05:00</div>
+        <div id="black-timer">BLACK: 05:00</div>
+    </div>
+
+    <div id="board"></div>
+
+    <div class="controls">
+        <button class="btn" onclick="resetGame()">Reset Board</button>
+        <button class="btn" onclick="setMode('pvp')">Local PvP</button>
+        <button class="btn" onclick="setMode('pve')">Vs AI</button>
+        <button class="btn btn-quit" onclick="quitGame()">Quit Game</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/chess.js@0.10.3/chess.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+
+    <script>
+        let board = null;
+        let game = new Chess();
+        let timerInterval = null;
+        let whiteTime = 300, blackTime = 300;
+        let mode = 'pve';
+
+        function updateTimerDisplay() {
+            const format = t => `${Math.floor(t / 60).toString().padStart(2, '0')}:${(t % 60).toString().padStart(2, '0')}`;
+            document.getElementById('white-timer').innerText = `WHITE: ${format(whiteTime)}`;
+            document.getElementById('black-timer').innerText = `BLACK: ${format(blackTime)}`;
+        }
+
+        function resetTimers() {
+            whiteTime = 300; blackTime = 300;
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(() => {
+                if (game.turn() === 'w') whiteTime--; else blackTime--;
+                updateTimerDisplay();
+                if (whiteTime <= 0 || blackTime <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up! Game Over.");
+                }
+            }, 1000);
+        }
+
+        function onSquareClick(square) {
+            if (game.game_over()) return;
+            let moves = game.moves({ square: square, verbose: true });
+
+            if (moves.length > 0) {
+                showProjections(square);
+            } else {
+                let currentSquare = $('.highlight-selected').attr('data-square');
+                if (currentSquare) {
+                    let move = game.move({ from: currentSquare, to: square, promotion: 'q' });
+                    if (move) {
+                        board.position(game.fen());
+                        removeHighlights();
+                        startTimer();
+                        checkGameState();
+                        if (mode === 'pve' && !game.game_over()) makeAIMove();
+                    }
+                }
+            }
+        }
+
+        // --- FIXED AI MOVE LOGIC (Prevents Freezes) ---
+        function makeAIMove() {
+            if (game.game_over()) return;
+            
+            // Using setTimeout allows the browser UI to update before processing AI logic
+            setTimeout(() => {
+                let moves = game.moves();
+                if (moves.length === 0) return;
+                
+                game.move(moves[Math.floor(Math.random() * moves.length)]);
+                board.position(game.fen());
+                
+                resetTimers();
+                checkGameState();
+            }, 250); 
+        }
+
+        function quitGame() {
+            if (confirm("Are you sure you want to quit?")) {
+                // Redirects player to effectively "close" the game
+                window.location.href = "about:blank";
+            }
+        }
+
+        function showProjections(square) {
+            removeHighlights();
+            $('#board .square-' + square).addClass('highlight-selected').attr('data-square', square);
+            game.moves({ square: square, verbose: true }).forEach(m => {
+                let type = (m.flags.includes('c') || m.flags.includes('e')) ? 'capture' : 'move';
+                $('#board .square-' + m.to).addClass('highlight-' + type);
+            });
+        }
+
+        function removeHighlights() { 
+            $('.square-55d63').removeClass('highlight-move highlight-capture highlight-selected').removeAttr('data-square'); 
+        }
+
+        function resetGame() {
+            clearInterval(timerInterval); timerInterval = null;
+            resetTimers();
+            game.reset(); board.start();
+            removeHighlights();
+        }
+
+        function checkGameState() {
+            if (game.in_checkmate()) alert("Checkmate!");
+            else if (game.in_draw()) alert("Draw!");
+        }
+
+        board = Chessboard('board', {
+            position: 'start', draggable: false,
+            pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+        });
+
+        $(document).on('click', '.square-55d63', function() { onSquareClick($(this).attr('data-square')); });
+        $(window).resize(board.resize);
+        updateTimerDisplay();
+        function setMode(m) { mode = m; resetGame(); }
+    </script>
+</body>
+</html>
