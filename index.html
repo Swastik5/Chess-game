@@ -12,7 +12,7 @@
             --neon-green: #39ff14;
             --neon-red: #ff3131;
             --bg-dark: #020202;
-            --border-blue: rgba(0, 212, 255, 0.4);
+            --square-border: rgba(0, 212, 255, 0.5);
         }
 
         body {
@@ -29,84 +29,64 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Perfectly Suited Broadcast Bar */
+        /* BROADCAST BAR */
         #broadcast-bar {
-            position: fixed;
-            top: -70px; 
-            left: 0;
-            width: 100%;
-            height: 60px;
-            background: rgba(2, 2, 2, 0.9);
-            color: var(--pure-white);
+            position: fixed; top: -70px; left: 0; width: 100%; height: 60px;
+            background: rgba(2, 2, 2, 0.95); color: var(--pure-white);
             border-bottom: 2px solid var(--neon-blue);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            z-index: 10000;
-            transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
-            text-shadow: 0 0 10px var(--neon-blue);
-            font-size: 0.9rem;
-            text-align: center;
-            padding: 0 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; text-transform: uppercase; letter-spacing: 3px;
+            z-index: 10000; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4); text-shadow: 0 0 10px var(--neon-blue);
+            font-size: 0.9rem; text-align: center; padding: 0 15px;
         }
-
         #broadcast-bar.show { top: 0; }
 
-        /* Game Over Overlay */
+        /* GAME OVER OVERLAY */
         #game-over-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #020202;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            cursor: pointer;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #020202; display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999; cursor: pointer;
         }
-
-        .overlay-title {
-            font-size: 3.5rem;
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
-
+        .overlay-title { font-size: 3.5rem; color: white; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; font-family: 'Comic Sans MS', cursive; }
         .overlay-sub { font-size: 1.2rem; color: var(--neon-blue); opacity: 0.8; }
 
-        .main-title { font-size: 2rem; font-weight: 900; letter-spacing: 6px; color: #fff; text-shadow: 0 0 10px var(--neon-blue); margin: 15px 0; text-align: center; }
+        /* NOTATION */
+        .notation-322f9 { color: var(--pure-white) !important; font-weight: 900 !important; font-size: 16px !important; text-shadow: 0 0 5px #000, 0 0 10px var(--neon-blue); }
+
+        /* BOARD */
+        .board-wrapper { width: 95vw; max-width: 500px; position: relative; }
+        #board { width: 100%; border: 8px solid var(--neon-blue); box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); background-color: var(--bg-dark); }
+        .white-1e1d7 { background-color: var(--pure-white) !important; border: 1px solid var(--square-border) !important; }
+        .black-3c85d { background-color: var(--neon-blue) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; }
+
+        /* MOVEMENT HIGHLIGHTS */
+        .highlight-move { box-shadow: inset 0 0 15px 5px var(--neon-green) !important; background: rgba(57, 255, 20, 0.25) !important; }
+        .highlight-capture { box-shadow: inset 0 0 20px 8px var(--neon-red) !important; background: rgba(255, 49, 49, 0.35) !important; }
         
-        .player-profile { 
-            width: 95vw; max-width: 500px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px; margin: 5px 0; 
-            border: 2px solid var(--neon-blue); 
-            background: rgba(0, 212, 255, 0.05); 
-            border-radius: 8px; 
+        /* PULSING SELECTION */
+        .highlight-selected {
+            background: rgba(255, 255, 255, 0.5) !important;
+            box-shadow: inset 0 0 15px white !important;
+            animation: pulse-select 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-select {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
         }
 
+        .piece-417db { transition: transform 0.4s ease-out !important; }
+
+        /* UI ELEMENTS */
+        .main-title { font-size: 2rem; font-weight: 900; letter-spacing: 6px; color: #fff; text-shadow: 0 0 15px var(--neon-blue); margin: 15px 0; text-align: center; }
+        .player-profile { width: 95vw; max-width: 500px; display: flex; justify-content: space-between; align-items: center; padding: 10px; margin: 5px 0; border: 2px solid var(--neon-blue); background: rgba(0, 212, 255, 0.1); border-radius: 8px; }
         .timer { font-family: 'Courier New', monospace; font-size: 1.4rem; font-weight: bold; color: #fff; background: #000; padding: 4px 12px; border-radius: 4px; border: 1px solid var(--neon-blue); }
         .active-timer { border-color: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); color: var(--neon-green); }
-        
-        .board-wrapper { width: 95vw; max-width: 500px; position: relative; }
-        #board { width: 100%; border: 6px solid var(--neon-blue); box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
-        
-        /* Smooth piece transition CSS override */
-        .piece-417db { transition: transform 0.3s ease-out !important; }
-
         .controls { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; justify-content: center; }
         button { padding: 10px 18px; background: transparent; border: 2px solid var(--neon-blue); color: var(--neon-blue); font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         button:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
         .btn-quit { border-color: var(--neon-red); color: var(--neon-red); }
-        .btn-quit:hover { background: var(--neon-red); color: white; box-shadow: 0 0 15px var(--neon-red); }
     </style>
 </head>
 <body>
@@ -154,17 +134,82 @@
 
         const pieceNames = { 'p': 'Pawn', 'n': 'Knight', 'b': 'Bishop', 'r': 'Rook', 'q': 'Queen', 'k': 'King' };
 
+        function removeHighlights() {
+            $('#board .square-55d63').removeClass('highlight-move highlight-capture highlight-selected');
+        }
+
+        function showProjections(square) {
+            removeHighlights();
+            $('#board .square-' + square).addClass('highlight-selected');
+            var moves = game.moves({ square: square, verbose: true });
+            moves.forEach(move => {
+                let cls = (move.flags.includes('c') || move.flags.includes('e')) ? 'highlight-capture' : 'highlight-move';
+                $('#board .square-' + move.to).addClass(cls);
+            });
+        }
+
         function triggerBroadcast(move) {
             if (move.captured) {
                 let victimColor = move.color === 'w' ? 'BLACK' : 'WHITE';
                 let killerColor = move.color === 'w' ? 'WHITE' : 'BLACK';
-                let victimPiece = pieceNames[move.captured].toUpperCase();
-                let msg = `THE ${victimColor} ${victimPiece} HAS BEEN ELIMINATED BY THE ${killerColor} ELEMENT`;
+                let msg = `THE ${victimColor} ${pieceNames[move.captured].toUpperCase()} ELIMINATED BY THE ${killerColor} ELEMENT`;
                 $('#broadcast-bar').text(msg).addClass('show');
-                setTimeout(() => { $('#broadcast-bar').removeClass('show'); }, 3000);
+                setTimeout(() => $('#broadcast-bar').removeClass('show'), 3000);
             }
         }
 
+        function onSquareClick(square) {
+            if (game.game_over()) return;
+
+            // IF SOMETHING IS ALREADY SELECTED
+            if (selectedSquare) {
+                // Try to move
+                var move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
+                
+                if (move === null) {
+                    // Move failed. Did we click another of our own pieces?
+                    let piece = game.get(square);
+                    if (piece && piece.color === game.turn()) {
+                        selectedSquare = square;
+                        showProjections(square); // Wait for input on the new piece
+                    } else {
+                        // Clicked an invalid square or empty space, deselect and wait.
+                        selectedSquare = null;
+                        removeHighlights();
+                    }
+                } else {
+                    // MOVE SUCCESSFUL
+                    board.position(game.fen());
+                    selectedSquare = null;
+                    removeHighlights();
+                    triggerBroadcast(move);
+                    if (game.game_over()) showGameOver("GAME OVER");
+                    if (!timerInterval) startTimer();
+                    if (mode === 'pva' && !game.game_over()) window.setTimeout(makeRandomMove, 450);
+                }
+            } 
+            // NOTHING SELECTED YET
+            else {
+                let piece = game.get(square);
+                if (piece && piece.color === game.turn()) {
+                    selectedSquare = square;
+                    showProjections(square); // Wait for input
+                }
+            }
+        }
+
+        function makeRandomMove() {
+            if (game.game_over()) return;
+            var moves = game.moves({ verbose: true });
+            if (moves.length === 0) return;
+            var move = moves[Math.floor(Math.random() * moves.length)];
+            game.move(move);
+            board.position(game.fen());
+            triggerBroadcast(move);
+            if (game.game_over()) showGameOver("GAME OVER");
+        }
+
+        // Logic for Timer and UI Management
         function formatTime(s) {
             let m = Math.floor(s/60); let sec = s%60;
             return (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
@@ -194,34 +239,6 @@
             $('#game-over-overlay').css('display', 'flex');
         }
 
-        function onSquareClick(square) {
-            if (game.game_over()) return;
-            var move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
-            
-            if (move === null) {
-                let piece = game.get(square);
-                if (piece && piece.color === game.turn()) selectedSquare = square;
-            } else {
-                board.position(game.fen());
-                selectedSquare = null;
-                triggerBroadcast(move);
-                if (game.game_over()) showGameOver("GAME OVER");
-                if (!timerInterval) startTimer();
-                if (mode === 'pva' && !game.game_over()) window.setTimeout(makeRandomMove, 400);
-            }
-        }
-
-        function makeRandomMove() {
-            if (game.game_over()) return;
-            var moves = game.moves({ verbose: true });
-            if (moves.length === 0) return;
-            var move = moves[Math.floor(Math.random() * moves.length)];
-            game.move(move);
-            board.position(game.fen());
-            triggerBroadcast(move);
-            if (game.game_over()) showGameOver("GAME OVER");
-        }
-
         function setMode(m) {
             mode = m;
             $('#black-label').html(mode === 'pvp' ? '<strong>PLAYER (BLACK)</strong>' : '<strong>SYSTEM AI (BLACK)</strong>');
@@ -231,6 +248,8 @@
         function resetGame() {
             $('#game-over-overlay').hide();
             $('#broadcast-bar').removeClass('show');
+            removeHighlights();
+            selectedSquare = null;
             clearInterval(timerInterval);
             timerInterval = null;
             whiteTime = 300; blackTime = 300;
@@ -239,17 +258,11 @@
             updateTimerDisplay();
         }
 
-        function quitGame() {
-            if(confirm("Terminate current session?")) resetGame();
-        }
+        function quitGame() { if(confirm("Terminate current session?")) resetGame(); }
 
-        // MOVEMENT OPTIMIZATION
         board = Chessboard('board', {
-            position: 'start',
-            draggable: false,
-            moveSpeed: 500,    // Slowed down slightly for a 'gliding' effect
-            snapbackSpeed: 300,
-            snapSpeed: 100,
+            position: 'start', draggable: false,
+            moveSpeed: 500, snapSpeed: 100, showNotation: true,
             pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
         });
 
