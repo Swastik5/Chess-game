@@ -40,7 +40,6 @@
             text-align: center;
         }
 
-        /* NEW: Elimination Broadcast Style */
         #elimination-broadcast {
             position: fixed;
             top: 20px;
@@ -103,6 +102,27 @@
         .white-1e1d7 { background-color: var(--pure-white) !important; box-shadow: inset 0 0 10px rgba(0, 150, 255, 0.2) !important; }
         .black-3c85d { background-color: var(--neon-blue) !important; box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.4) !important; }
 
+        /* --- HIGH VISIBILITY DUAL-GLOW NOTATIONS --- */
+        .notation-322f9 {
+            font-weight: 900 !important;
+            font-size: 16px !important;
+            opacity: 1 !important;
+            letter-spacing: 0.5px;
+        }
+        
+        .white-1e1d7 .notation-322f9 {
+            color: #0055ff !important; 
+            text-shadow: 0 0 2px #fff, 0 0 8px #00d4ff, 0 0 15px #00d4ff !important;
+        }
+
+        .black-3c85d .notation-322f9 {
+            color: #ffffff !important;
+            text-shadow: 0 0 2px #000, 0 0 10px #ffffff, 0 0 20px #ffffff !important;
+        }
+
+        .alpha-d2270 { bottom: 3px !important; right: 6px !important; }
+        .numeric-fc926 { top: 3px !important; left: 6px !important; }
+
         .highlight-selected { box-shadow: inset 0 0 0 5px yellow !important; }
         .highlight-move { box-shadow: inset 0 0 15px 5px var(--neon-green) !important; background: rgba(57, 255, 20, 0.2) !important; }
         .highlight-capture { box-shadow: inset 0 0 15px 5px var(--neon-red) !important; background: rgba(255, 49, 49, 0.3) !important; }
@@ -132,7 +152,7 @@
     <div id="elimination-broadcast"></div>
 
     <div class="player-profile">
-        <div><strong>SYSTEM AI (BLACK)</strong></div>
+        <div><strong id="black-player-name">SYSTEM AI (BLACK)</strong></div>
         <div class="timer" id="black-timer">02:30</div>
     </div>
 
@@ -187,16 +207,13 @@
             updateTimerDisplay();
         }
 
-        // NEW: Elimination Broadcast Function
         function triggerBroadcast(move) {
             if (move.captured) {
                 const attackerColor = move.color === 'w' ? 'WHITE' : 'BLACK';
                 const victimColor = move.color === 'w' ? 'BLACK' : 'WHITE';
                 const attackerName = pieceNames[move.piece];
                 const victimName = pieceNames[move.captured];
-                
                 const message = `${victimColor} ${victimName} has been eliminated by ${attackerColor} ${attackerName}`;
-                
                 $('#elimination-broadcast').stop(true, true).text(message).fadeIn(300).delay(3000).fadeOut(500);
             }
         }
@@ -204,13 +221,9 @@
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                if (game.game_over()) {
-                    clearInterval(timerInterval);
-                    return;
-                }
+                if (game.game_over()) { clearInterval(timerInterval); return; }
                 if (game.turn() === 'w') whiteTime--; 
                 else blackTime--; 
-
                 if (whiteTime <= 0 || blackTime <= 0) {
                     clearInterval(timerInterval);
                     alert("TIME EXPIRED! GAME OVER.");
@@ -222,7 +235,6 @@
         function checkGameState() {
             $('#check-alert').hide();
             $('.square-55d63').removeClass('highlight-check');
-            
             if (game.in_check()) {
                 $('#check-alert').fadeIn();
                 let kingPos = "";
@@ -234,7 +246,6 @@
                 });
                 $('.square-' + kingPos).addClass('highlight-check');
             }
-
             if (game.game_over()) {
                 clearInterval(timerInterval);
                 let status = "GAME OVER";
@@ -247,7 +258,6 @@
         function onSquareClick(square) {
             if (game.game_over()) return;
             var piece = game.get(square);
-
             if (selectedSquare === null) {
                 if (piece && piece.color === game.turn()) {
                     selectedSquare = square;
@@ -255,7 +265,6 @@
                 }
             } else {
                 var move = game.move({ from: selectedSquare, to: square, promotion: 'p' }); 
-                
                 if (move === null) {
                     move = game.move({ from: selectedSquare, to: square, promotion: 'q' });
                     if (move && move.flags.includes('p')) {
@@ -263,7 +272,6 @@
                         game.load(fen);
                     }
                 }
-
                 if (move === null) {
                     if (piece && piece.color === game.turn()) {
                         selectedSquare = square;
@@ -273,19 +281,14 @@
                         removeHighlights();
                     }
                 } else {
-                    // Trigger broadcast for player move
                     triggerBroadcast(move);
                     board.position(game.fen());
                     selectedSquare = null;
                     removeHighlights();
                     checkGameState();
-                    
-                    whiteTime = 150;
-                    blackTime = 150;
+                    whiteTime = 150; blackTime = 150;
                     updateTimerDisplay();
-
                     if (!timerInterval) startTimer();
-
                     if (mode === 'pva' && !game.game_over()) {
                         window.setTimeout(makeRandomMove, 600);
                     }
@@ -297,21 +300,15 @@
             if (game.game_over()) return; 
             var moves = game.moves({verbose: true});
             if (moves.length === 0) return;
-            
             let moveData = moves[Math.floor(Math.random() * moves.length)];
             let move = game.move(moveData);
-            
             if (move && move.flags.includes('p')) {
                 let fen = game.fen().replace(/Q(?=[^ ]* b)/, 'P').replace(/q(?=[^ ]* w)/, 'p');
                 game.load(fen);
             }
-
-            // Trigger broadcast for AI move
             triggerBroadcast(move);
             board.position(game.fen());
-            
-            whiteTime = 150;
-            blackTime = 150;
+            whiteTime = 150; blackTime = 150;
             updateTimerDisplay();
             checkGameState();
         }
@@ -338,9 +335,7 @@
         }
 
         function quitGame() {
-            if(confirm("Are you sure you want to quit the current game?")) {
-                resetGame();
-            }
+            if(confirm("Are you sure you want to quit the current game?")) { resetGame(); }
         }
 
         board = Chessboard('board', {
@@ -351,7 +346,16 @@
         $(document).on('click', '.square-55d63', function() { onSquareClick($(this).attr('data-square')); });
         $(window).resize(board.resize);
         updateTimerDisplay();
-        function setMode(m) { mode = m; resetGame(); }
+
+        function setMode(m) { 
+            mode = m; 
+            if (mode === 'pva') {
+                $('#black-player-name').text('SYSTEM AI (BLACK)');
+            } else if (mode === 'pvp') {
+                $('#black-player-name').text('PLAYER (BLACK)');
+            }
+            resetGame(); 
+        }
     </script>
 </body>
 </html>
